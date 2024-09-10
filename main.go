@@ -3,17 +3,28 @@ package main
 import "fmt"
 import "runtime"
 
-func print(till int, message string) {
-	for i := 0; i < till; i++ {
-		fmt.Println((i + 1), message)
-	}
-}
-
 func main() {
 	runtime.GOMAXPROCS(2)
-	go print(5, "hello")
-	print(5, "apa kabar")
+	var messages = make(chan string)
+	var sayHelloTo = func(who string) {
+		var data = fmt.Sprintf("hello %s", who)
+		fmt.Println("selesai kirim data ", who)
+		messages <- data
+		fmt.Println("test")
+	}
 
-	var input string
-	fmt.Scanln(&input)
+	go sayHelloTo("john wick")
+	go sayHelloTo("ethan hunt")
+	go sayHelloTo("jason bourne")
+
+	var message1 = <-messages
+	fmt.Println("message 1 ", message1)
+
+	fmt.Println("executed")
+	var message2 = <-messages
+	fmt.Println("message 2", message2)
+
+	var message3 = <-messages
+	fmt.Println("message 3", message3)
+
 }
